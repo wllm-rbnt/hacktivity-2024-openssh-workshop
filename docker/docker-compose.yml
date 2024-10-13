@@ -1,0 +1,36 @@
+services:
+  gateway:
+    hostname: gateway
+    build: ./gateway
+    ports:
+      - "8022:22"
+      - "8222:2222"
+    networks:
+      public_net:
+          ipv4_address: 172.18.0.2
+      private_net:
+          ipv4_address: 172.19.0.2
+  internal:
+    hostname: internal
+    build: ./internal
+    networks:
+      private_net:
+          ipv4_address: 172.19.0.3
+
+networks:
+  public_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.18.0.0/24
+          gateway: 172.18.0.1
+  private_net:
+    driver: bridge
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.19.0.0/24
+          gateway: 172.19.0.1
+

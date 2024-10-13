@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language name="sshschema">
+    <highlighting>
+		<list name="green">
+            <item>local</item>
+            <item>local_machine</item>
+			<item>green_machine</item>
+			<item>green_user</item>
+		</list>
+		<list name="red">
+			<item>LAN</item>
+			<item>internal</item>
+			<item>internal_machine</item>
+			<item>red_machine</item>
+			<item>red_user</item>
+			<item>gateway_priv</item>
+			<item>internal_priv</item>
+		</list>
+		<list name="blue">
+			<item>gateway</item>
+			<item>lab_server</item>
+			<item>gateway_machine</item>
+			<item>blue_machine</item>
+			<item>blue_user</item>
+            <item>Internet</item>
+            <item>The_Internet</item>
+			<item>gateway_pub</item>
+	    </list>
+		<contexts>
+			<context name="Normal" attribute="Normal Text">
+				<keyword attribute="Blue" String="blue"/>
+				<keyword attribute="Red" String="red"/>
+				<keyword attribute="Green" String="green"/>
+			</context>
+		</contexts>
+		<itemDatas>
+			<itemData name="Blue" defStyleNum="dsBuiltIn"/>
+			<itemData name="Red" defStyleNum="dsKeyword"/>
+            <itemData name="Green" defStyleNum="dsImport"/>
+		</itemDatas>
+	</highlighting>
+</language>

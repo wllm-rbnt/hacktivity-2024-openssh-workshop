@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="William Robinet (Conostix S.A.)" />
+  <title>Exploring OpenSSH: Hands-On Workshop for Beginners</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        background-color: #ffffff;
+        color: #a0a0a0;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+    div.sourceCode
+      { color: #1f1c1b; background-color: #ffffff; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #1f1c1b; } /* Normal */
+    code span.al { color: #ffff00; font-weight: bold; } /* Alert */
+    code span.an { color: #ca60ca; } /* Annotation */
+    code span.at { color: #0057ae; } /* Attribute */
+    code span.bn { color: #b08000; } /* BaseN */
+    code span.bu { color: #0000ff; font-weight: bold; } /* BuiltIn */
+    code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #924c9d; } /* Char */
+    code span.cn { color: #aa5500; } /* Constant */
+    code span.co { color: #898887; } /* Comment */
+    code span.cv { color: #0095ff; } /* CommentVar */
+    code span.do { color: #ffffff; font-weight: bold; } /* Documentation */
+    code span.dt { color: #0057ae; } /* DataType */
+    code span.dv { color: #b08000; } /* DecVal */
+    code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+    code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+    code span.fl { color: #b08000; } /* Float */
+    code span.fu { color: #644a9b; } /* Function */
+    code span.im { color: #00ff00; font-weight: bold; } /* Import */
+    code span.in { color: #b08000; } /* Information */
+    code span.kw { color: #ff0000; font-weight: bold; } /* Keyword */
+    code span.op { color: #1f1c1b; } /* Operator */
+    code span.ot { color: #006e28; } /* Other */
+    code span.pp { color: #006e28; } /* Preprocessor */
+    code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+    code span.sc { color: #3daee9; } /* SpecialChar */
+    code span.ss { color: #ff5500; } /* SpecialString */
+    code span.st { color: #bf0303; } /* String */
+    code span.va { color: #0057ae; } /* Variable */
+    code span.vs { color: #bf0303; } /* VerbatimString */
+    code span.wa { color: #bf0303; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="./md2pdf_resources/style.css">
+  <script src="./md2pdf_resources/jquery-2.1.3.min.js"></script>
+  <script src="./md2pdf_resources/twemoji.min.js" crossorigin="anonymous"></script>
+  <script>
+      $(document).ready
+      (
+        function()
+        {
+              twemoji.parse(document.body);
+        }
+      );
+  </script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Exploring OpenSSH: Hands-On Workshop for
+Beginners</h1>
+<p class="author">William Robinet (Conostix S.A.)</p>
+</header>
+<p><strong>Hacktivity 2024 - Budapest</strong></p>
+<p><strong>Exploring OpenSSH: Hands-On Workshop for
+Beginners</strong></p>
+<p>William Robinet (Conostix S.A.) - 2024-10-14</p>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="before-we-begin-12">Before we begin 1/2</h1>
+<h2 id="workshop-resources">Workshop resources</h2>
+<p>Matrix Room (cfr paper QR Code):</p>
+<p><strong>https://matrix.to/#/#Hacktivity_2024-OpenSSH_Workshop:matrix.org</strong></p>
+<p>Used to exchange links and commands.</p>
+<p>Workshop repository (cfr paper QR Code):</p>
+<p><strong>https://github.com/wllm-rbnt/hacktivity-2024-openssh-workshop/</strong></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/wllm-rbnt/hacktivity-2024-openssh-workshop.git</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> hacktivity-2024-openssh-workshop</span></code></pre></div>
+<p>Shorter URLs:</p>
+<ul>
+<li>Matrix Room -&gt; <strong>https://tinyurl.com/52bftbc7</strong></li>
+<li>Repository -&gt; <strong>https://tinyurl.com/3z5n9ppb</strong></li>
+<li>Slides:
+<ul>
+<li>Markdown (source version) -&gt;
+<strong>https://tinyurl.com/4muxcxrz</strong></li>
+<li>HTML (rendered version) -&gt;
+<strong>https://tinyurl.com/4jpsm4nr</strong></li>
+<li>PDF (rendered version) -&gt;
+<strong>https://tinyurl.com/2jmkfsfy</strong></li>
+</ul></li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="before-we-begin-22">Before we begin 2/2</h1>
+<p>Slides are written in Markdown</p>
+<p>Get the <em>PDF</em>/<em>HTML</em> versions or use <em>patat</em> to
+render the presentation in your terminal</p>
+<p>Go to release page
+<strong>https://github.com/jaspervdj/patat/releases</strong> and
+download version 0.12.0.1</p>
+<p>or</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://github.com/jaspervdj/patat/releases/download/v0.12.0.1/patat-v0.12.0.1-linux-x86_64.tar.gz</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tar</span> xzf patat-v0.12.0.1-linux-x86_64.tar.gz patat-v0.12.0.1-linux-x86_64/patat</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">patat-v0.12.0.1-linux-x86_64/patat</span> hacktivity-2024-openssh-workshop.patat.md</span></code></pre></div>
+<p>The Markdown version can be converted to PDF &amp; HTML by using the
+provided <em>md2pdf.sh</em> script (<em>pandoc</em> &amp;
+<em>chromium</em> must be installed first)</p>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="about-me">About me</h1>
+<ul>
+<li><p>Introduced to Open Source &amp; Free Software around the end of
+the 90’s</p></li>
+<li><p>CompSci studies, work in IT at Conostix S.A. - AS197692</p></li>
+<li><p>ssldump improvements (build system, bug fixes, JSON output, IPv6
+&amp; ja3(s), …)</p></li>
+<li><p>asn1template: painless ASN.1 editing</p></li>
+<li><p>🎸 🏃 🚵 🔭 ⏚ …</p></li>
+<li><p>GitHub: <strong>https://github.com/wllm-rbnt/</strong></p></li>
+<li><p>Mastodon: <strong>https://infosec.exchange/<span class="citation"
+data-cites="wr">@wr</span></strong></p></li>
+</ul>
+<hr />
+<!--config:
+wrap: false
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="local-machine-setup">Local Machine Setup</h1>
+<h2 id="docker-installation">Docker Installation</h2>
+<p>Reference documentation:
+<strong>https://docs.docker.com/engine/install/</strong></p>
+<p>This will provide <code>docker compose</code> v2 command (with a
+space).</p>
+<p>On Debian 12 (bookworm), the following command will provide
+<code>docker-compose</code> v1 command (with a dash).</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install docker.io docker-compose</span></code></pre></div>
+<p>On Ubuntu 24.10, the <code>docker compose</code> v2 command can be
+installed directly:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install docker.io docker-compose-v2</span></code></pre></div>
+<p>On Rocky Linux 9, install <code>docker-ce</code> with
+<code>docker compose</code> v2 commmand:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf config-manager <span class="at">--add-repo</span> https://download.docker.com/linux/rhel/docker-ce.repo</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf <span class="at">-y</span> install docker-ce docker-ce-cli containerd.io docker-compose-plugin</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl <span class="at">--now</span> enable docker</span></code></pre></div>
+<h2 id="various-other-tools">Various other tools</h2>
+<p>We will use <code>netcat</code> (<code>netcat-traditional</code> on
+Debian/Ubuntu), <code>curl</code>, <code>wireshark</code> (or
+<code>tcpdump</code>).</p>
+<hr />
+<!--config:
+wrap: false
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="labs-network-layout">Labs Network Layout</h1>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a> ┌───────────────────┐              ┌───────────────────────────────────────────┐</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a> │ Local Network     │              │ Lab network (containers)                  │</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a> │ ┌───────────────┐ │              │ ┌─────────────┐          ┌──────────────┐ │</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a> │ │     <span class="im">local</span>     │ │&lt;------------&gt;│ │   <span class="bu">gateway</span>   │          │   <span class="kw">internal</span>   │ │</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a> │ └───────────────┘ │ <span class="bu">The_Internet</span> │ └─────────────┘          └──────────────┘ │</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a> │  IP: 172.18.0.1   │              │  Pub 172.18.0.2                           │</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a> │                   │              │  Priv 172.19.0.2 &lt;-<span class="kw">LAN</span>-&gt; Priv 172.19.0.3  │</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a> └───────────────────┘              └───────────────────────────────────────────┘</span></code></pre></div>
+<p>(IP addresses may differ from your Docker setup)</p>
+<p>Your <em>local</em> machine can reach <code>gateway</code> server
+over ‘The Internet’</p>
+<ul>
+<li><p><em>local</em> machine is your personal laptop or VM. It is
+located “somewhere on the Internet” It is able to reach
+<code>gateway</code> on TCP port 22 (on 172.18.0.2)</p></li>
+<li><p><strong>Lab network</strong> is a remote private LAN
+(172.19.0.0/16 in this case)</p></li>
+<li><p>On this remote LAN, <code>gateway</code> is privately known as
+172.19.0.2.</p></li>
+<li><p><code>gateway</code> is connected to another machine named
+<strong>internal</strong> (172.19.0.3)</p></li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="usernames-and-passwords">Usernames and Passwords</h1>
+<p>2 users exist on each container: <em>root</em> and <em>user</em>.</p>
+<p>Passwords are the same as usernames. <em>user</em> has
+<strong>sudo</strong> access on each machine (no password required).</p>
+<h1 id="shell-commands">Shell commands</h1>
+<p>Shell commands are prefixed by a prompt designating the machine on
+which the command shall be run:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ &lt;<span class="im">local</span> command&gt;</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>(<span class="bu">gateway</span>)$ &lt;remote command on <span class="bu">gateway</span> machine&gt;</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>(<span class="kw">internal</span>)$ &lt;remote command on <span class="kw">internal</span> machine&gt;</span></code></pre></div>
+<h1 id="ip-addresses">IP addresses</h1>
+<ul>
+<li><p>IP addresses are configured statically when you execute
+<code>start_containers.sh</code></p></li>
+<li><p>3 IP addresses will appear during this workshop</p>
+<ul>
+<li>&lt;gateway_pub&gt;</li>
+<li>&lt;gateway_priv&gt;</li>
+<li>&lt;internal_priv&gt;</li>
+</ul></li>
+</ul>
+<hr />
+<!--config:
+wrap: false
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="labs-containers">Labs Containers</h1>
+<ul>
+<li><p>2 containers will be used during this workshop, one for
+<em>gateway</em> and a second for <em>internal</em></p></li>
+<li><p>Build and start containers with:</p></li>
+</ul>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ cd docker</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ./build_containers.sh</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ./start_containers.sh</span></code></pre></div>
+<ul>
+<li>Print setup information:</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ./get_info.sh</span></code></pre></div>
+<ul>
+<li>Stop containers with:</li>
+</ul>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ./stop_containers.sh</span></code></pre></div>
+<ul>
+<li>Cleanup the whole Docker setup: <strong>WARNING this will remove all
+containers, images and networks from your local Docker
+setup</strong></li>
+</ul>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ./docker_wipe.sh</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ sudo systemctl restart docker</span></code></pre></div>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="illustration-telnet-is-not-secure">Illustration: Telnet is not
+secure</h1>
+<ul>
+<li><p>A <em>telnet</em> server is listening on <em>gateway</em>, TCP
+port 23</p></li>
+<li><p>Start a traffic capture on TCP port 23 in another
+terminal:</p></li>
+</ul>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ sudo apt install wireshark</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ sudo wireshark</span></code></pre></div>
+<ul>
+<li>Start a capture on your main network interface (<em>eth0</em>) or
+<em>any</em></li>
+<li>Then, in another shell, run the <em>telnet</em> client on your local
+machine:</li>
+</ul>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ sudo apt install telnet</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ telnet 172.18.0.2</span></code></pre></div>
+<ul>
+<li><p>Login, <em>user</em> Password, <em>user</em></p></li>
+<li><p>Finally, right-click on the first TCP packet that belongs to this
+connection (port 23), then <em>Follow</em> -&gt; <em>TCP
+Stream</em></p></li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="two-main-issues">Two main issues:</h1>
+<ul>
+<li><p>Cleartext message exchange: vulnerable to traffic sniffing
+tcpdump/wireshark on traffic path (firewall, router)</p></li>
+<li><p>Insecure authentication: vulnerable to Man-In-The-Middle attack
+Ettercap (another machine on same LAN), proxy software on an
+intermediate router/firewall</p></li>
+</ul>
+<p>Same goes for FTP, HTTP, SMTP, …</p>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="ssh-history-implementations">SSH History &amp;
+Implementations</h1>
+<p>SSH stands for <strong>S</strong>ecure <strong>SH</strong>ell</p>
+<h2 id="protocol-versions">Protocol Versions</h2>
+<ul>
+<li><a
+href="https://en.wikipedia.org/wiki/Secure_Shell#Version_1">SSH-1.0</a>
+1995, by Tatu Ylönen, researcher at Helsinki University of
+Technology</li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc4254">SSH-2.0</a>
+2006, IETF Standardization RFC 4251-4256</li>
+<li><a
+href="https://datatracker.ietf.org/doc/html/rfc4253#section-5.1">SSH-1.99</a>
+Retro-compatibility pseudo-version, Old client/New Server</li>
+<li><a href="https://github.com/francoismichel/ssh3">SSH3</a> (?)
+Experimental implementation using HTTP/3 (QUIC)</li>
+</ul>
+<h2 id="implementations">Implementations</h2>
+<ul>
+<li>OpenSSH on Unices, Client &amp; Server for GNU/Linux, *BSD, MacOS,
+…</li>
+<li>OpenSSH on MS Windows</li>
+<li>Terminal &amp; File transfer clients for MS Windows: PuTTY,
+MobaXterm, WinSCP, FileZilla, …</li>
+<li>Dropbear, Lightweight implementation, for embedded-type Linux (or
+other Unices) systems</li>
+<li>On mobile: ConnectBot for Android, Termius for Apple iOS</li>
+<li>Network Appliances, OpenSSH or custom implementation</li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="focus-on-openssh-tool-suite-on-gnulinux">Focus on OpenSSH Tool
+suite (on GNU/Linux)</h1>
+<ul>
+<li>Focus on the OpenSSH tool suite, a project started in 1999</li>
+<li>Clients &amp; Server software</li>
+<li>This is the reference opensource version for many OSes</li>
+<li>It is based on modern cryptography algorithms and protocols</li>
+<li>It is widely available out-of-the-box</li>
+<li>It contains a wide range of tools (remote shell, file transfer, key
+management, …)</li>
+<li>Automation friendly (Ansible, or custom scripts)</li>
+<li>Main tools
+<ul>
+<li><em>ssh</em> - Remote terminal access</li>
+<li><em>scp</em> - File transfer</li>
+<li><em>sftp</em> - FTP-like file transfer</li>
+</ul></li>
+<li>Helpers
+<ul>
+<li><em>ssh-keygen</em> - Public/Private keypair generation</li>
+<li><em>ssh-copy-id</em> - Key deployment script</li>
+<li><em>ssh-agent</em> - Key management daemon (equivalent to PuTTY’s
+pageant.exe)</li>
+<li><em>ssh-add</em> - Key/Agent management tool</li>
+</ul></li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="documentation">Documentation</h1>
+<p>Online manual pages</p>
+<ul>
+<li><p>Listing of <strong>C</strong>ommand <strong>LI</strong>ne man
+pages:</p>
+<p><code>$ man -k ssh</code></p></li>
+<li><p>Listing client’s configuration options:</p>
+<p><code>$ man ssh_config</code></p></li>
+<li><p>Listing server’s configuration options (the
+<em>openssh-server</em> package must be installed):</p>
+<p><code>$ man sshd_config</code></p></li>
+<li><p>CLI help, in your terminal, just type</p>
+<ul>
+<li><code>ssh</code> for the client</li>
+<li><code>/usr/sbin/sshd --help</code> for the server</li>
+<li><code>ssh-keygen --help</code> for the key management tool</li>
+<li>…</li>
+</ul></li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="first-login-12---commands-tcpdump-fingerprints">First Login
+(1/2) - Commands, tcpdump &amp; fingerprints</h1>
+<p>Syntax is: <code>ssh &lt;username&gt;@&lt;host&gt;</code>, where
+<em><host></em> can be a hostname or an IP address</p>
+<p>Username and password are the same as the one from the telnet
+example: - Username: <em>user</em> / Password: <em>user</em></p>
+<ul>
+<li>Start a traffic capture on TCP port 22 in another terminal, traffic
+is <strong>encrypted</strong>:</li>
+</ul>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ sudo tcpdump -n -i any -XXX tcp and port 22</span></code></pre></div>
+<ul>
+<li><p>Retrieve the server keys fingerprints through a secure
+channel:</p>
+<p><strong>https://github.com/wllm-rbnt/hacktivity-2024-openssh-workshop/blob/main/fingerprints.txt</strong></p></li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="first-login-22---connection-host-authentication">First Login
+(2/2) - Connection &amp; host authentication</h1>
+<p>Type the following in a local terminal on your machine:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh user@&lt;<span class="bu">gateway_pub</span>&gt;</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>or</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -o VisualHostKey=true user@&lt;<span class="bu">gateway_pub</span>&gt;</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>The authenticity of host &#39;172.18.0.2 (172.18.0.2)&#39; can&#39;t be established.</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>ED25519 key fingerprint is SHA256:HFofTLfh2W/1IR3+g0sXGAcRs4ZnVsWwGKmbOzeMefk.</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>+--[ED25519 256]--+</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>|          . +B=*o|</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>|         o ooBX.o|</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>|        o oo=Oo=.|</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>|       + o..= o.*|</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>|      . S .o o o=|</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>|          o . o..|</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>|           = o   |</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>|          = *    |</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>|           + oE  |</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>+----[SHA256]-----+</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>This key is not known by any other names.</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>Are you sure you want to continue connecting (yes/no/[fingerprint])?</span></code></pre></div>
+<ul>
+<li>Type <em>yes</em> to accept and go on with user authentication, or
+<em>no</em> to refuse and disconnect immediately</li>
+<li>or type the <em>fingerprint</em> you received from the secure
+channel If the fingerprint you entered matches the one that is printed,
+the system will proceed with user authentication</li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="known-hosts-fingerprint-databases">Known hosts fingerprint
+databases</h1>
+<p>Remote Host Authentication is performed only on first connection</p>
+<p><code>~/.ssh/known_hosts</code> is then populated with host reference
+and corresponding key fingerprint</p>
+<p><code>/etc/ssh/ssh_known_hosts</code> can be used as a system-wide
+database of know hosts</p>
+<p>Hosts references can be stored as clear text (IP or hostname) or the
+corresponding hash (see <em>HashKnownHosts</em> option)</p>
+<h1 id="host-keys-location-on-openssh-server">Host keys location on
+OpenSSH server</h1>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>(<span class="bu">gateway</span>)$ ls -l /etc/ssh/ssh_host*pub</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>-rw------- 1 root root  513 May 23 12:39 /etc/ssh/ssh_host_ecdsa_key</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>-rw-r--r-- 1 root root  179 May 23 12:39 /etc/ssh/ssh_host_ecdsa_key.pub</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>-rw------- 1 root root  411 May 23 12:39 /etc/ssh/ssh_host_ed25519_key</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>-rw-r--r-- 1 root root   99 May 23 12:39 /etc/ssh/ssh_host_ed25519_key.pub</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>-rw------- 1 root root 2602 May 23 12:39 /etc/ssh/ssh_host_rsa_key</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>-rw-r--r-- 1 root root  571 May 23 12:39 /etc/ssh/ssh_host_rsa_key.pub</span></code></pre></div>
+<h1 id="computing-fingerprints-of-host-keys">Computing fingerprints of
+host keys</h1>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>(<span class="bu">gateway</span>)$ for i in $(ls -1 /etc/ssh/ssh_host*pub); do ssh-keygen -lf $i; done</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>256 SHA256:gbF30TEqv4ucpI3VFIEjq0dnrji5woxacnPe+N9mFX8 root@460a6cac3a3c (ECDSA)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>256 SHA256:/hUAOroJsQzhM4f9qSZxcBLqEYqmoPi03pVX2fQUxrg root@460a6cac3a3c (ED25519)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>3072 SHA256:D0gvg+2kFzvrLjqi0OEZ23tnQN3H/+oB3cqm0VZHWiQ root@460a6cac3a3c (RSA)</span></code></pre></div>
+<p>Note: use <code>ssh-keygen -lvf &lt;public_key_file&gt;</code> to
+generate the visual ASCII art representation of a key</p>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="configuration-12">Configuration (1/2)</h1>
+<h2 id="configuration-files">Configuration files</h2>
+<p>Client:</p>
+<ul>
+<li>Per-user client configuration: <code>~/.ssh/config</code></li>
+<li>System-wide client configuration:
+<code>/etc/ssh/ssh_config</code></li>
+<li>System-wide local configuration:
+<code>/etc/ssh/ssh_config.d/*</code></li>
+</ul>
+<p>Server:</p>
+<ul>
+<li>Server configuration: <code>/etc/ssh/sshd_config</code></li>
+<li>Server local configuration:
+<code>/etc/ssh/sshd_config.d/*</code></li>
+</ul>
+<h2 id="configuration-options">Configuration options</h2>
+<ul>
+<li>Client configuration options: <code>$ man ssh_config</code></li>
+<li>Server configuration options: <code>$ man sshd_config</code></li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="configuration-22---per-host-client-configuration">Configuration
+(2/2) - Per host client configuration</h1>
+<p>Client configuration options can be specified per host</p>
+<p>Example:</p>
+<p>Type following in your local <code>~/.ssh/config</code>:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>Host <span class="bu">gateway</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    Hostname &lt;<span class="bu">gateway_pub</span>&gt;</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    User user</span></code></pre></div>
+<p>Tips: Printing the “would be applied” configuration</p>
+<p>The <code>-G</code> parameter cause <code>ssh</code> to print the
+configuration that would be applied for a given connection (without
+actually connecting)</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -G <span class="bu">gateway</span></span></code></pre></div>
+<p>The following command should output your username:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -G <span class="bu">gateway</span> | grep user</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>user user</span></code></pre></div>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="tips">Tips</h1>
+<h2 id="increase-verbosity">Increase verbosity</h2>
+<p>Launch ssh commands with -v parameter in order to increase verbosity,
+and help with debugging</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -v user@&lt;<span class="bu">gateway_pub</span>&gt;</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>OpenSSH_8.4p1 Debian-5+deb11u2, OpenSSL 1.1.1w  11 Sep 2023</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>debug1: Reading configuration data /home/user/.ssh/config</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>debug1: Reading configuration data /etc/ssh/ssh_config</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>[...]</span></code></pre></div>
+<h2 id="escape-character">Escape character</h2>
+<p>The escape character can be used to pass out-of-band commands to ssh
+client</p>
+<ul>
+<li>By default <code>~</code>, must be at beginning of a new line</li>
+<li>Commands:
+<ul>
+<li>Quit current session <code>~.</code></li>
+<li>List Forwarded connections <code>~#</code></li>
+<li>Decrease the verbosity (LogLevel) <code>~V</code></li>
+<li>Increase the verbosity (LogLevel) <code>~v</code></li>
+</ul></li>
+<li>Repeat <code>~</code> char in order to type it ( <code>~~</code>
+)</li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="public-key-authentication-12">Public Key Authentication
+(1/2)</h1>
+<h2 id="main-authentication-methods">Main Authentication Methods</h2>
+<ul>
+<li><em>Password</em> authentication</li>
+<li><em>Public/Private key</em> authentication
+<ul>
+<li>Used for password-less authentication (passphrase may be required to
+unlock private key)</li>
+</ul></li>
+</ul>
+<h2 id="lab">Lab</h2>
+<ul>
+<li>Generate a new key pair on your local system (with or without a
+passphrase):</li>
+</ul>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh-keygen -f ~/.ssh/my-ssh-key</span></code></pre></div>
+<ul>
+<li>Install your public key on the remote server:</li>
+</ul>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh-copy-id -i ~/.ssh/my-ssh-key.pub user@&lt;<span class="bu">gateway_pub</span>&gt;</span></code></pre></div>
+<p><strong>Note</strong>: <code>ssh-copy-id</code> copies the public key
+from <code>~/.ssh/my-ssh-key.pub</code> to the remote machine in
+<code>~/.ssh/authorized_keys</code></p>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="public-key-authentication-22">Public Key Authentication
+(2/2)</h1>
+<ul>
+<li>Login again with your new key pair:</li>
+</ul>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -i ~/.ssh/my-ssh-key user@&lt;<span class="bu">gateway_pub</span>&gt;</span></code></pre></div>
+<ul>
+<li>Reference your key pair in your personal local configuration file
+(<code>~/.ssh/config</code>):</li>
+</ul>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>Host <span class="bu">gateway</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    Hostname &lt;<span class="bu">gateway_pub</span>&gt;</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    User user</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    IdentityFile ~/.ssh/my-ssh-key</span></code></pre></div>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="authentication-agent-12">Authentication Agent (1/2)</h1>
+<p>The Authentication Agent can hold access to private keys, thus
+eliminating the need to enter passphrase at each use</p>
+<p>Start the agent:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh-agent | tee ssh-agent-env.sh</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>SSH_AUTH_SOCK=/tmp/ssh-KwTcl7ZieUKD/agent.1193973; export SSH_AUTH_SOCK;</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>SSH_AGENT_PID=1193974; export SSH_AGENT_PID;</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>echo Agent pid 1193974;</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ source ssh-agent-env.sh</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>Agent pid 1193974</span></code></pre></div>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="authentication-agent-22">Authentication Agent (2/2)</h1>
+<p>Load private key into the agent:</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh-add ~/.ssh/my-ssh-key</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>Enter passphrase for /home/user/.ssh/my-ssh-key: ********</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>Identity added: my-ssh-key (user@local)</span></code></pre></div>
+<p>Connect to remote machine:</p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh user@&lt;<span class="bu">gateway_pub</span>&gt;</span></code></pre></div>
+<p>Going further, <a
+href="https://www.funtoo.org/Funtoo:Keychain">keychain</a> can be used
+to manage ssh-agent &amp; keys across logins sessions</p>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="remote-command-execution-12">Remote Command Execution (1/2)</h1>
+<p>Simple command execution:</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh user@&lt;<span class="bu">gateway_pub</span>&gt; hostname</span></code></pre></div>
+<p>With redirection to local file:</p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh user@&lt;<span class="bu">gateway_pub</span>&gt; hostname &gt; hostname.txt</span></code></pre></div>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="remote-command-execution-22">Remote Command Execution (2/2)</h1>
+<p>With redirection to remote file:</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh user@&lt;<span class="bu">gateway_pub</span>&gt; &quot;hostname &gt; hostname.txt&quot;</span></code></pre></div>
+<p>With pipes:</p>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ echo blabla | ssh user@&lt;<span class="bu">gateway_pub</span>&gt; &quot;cat - | tr &#39;a-z&#39; &#39;A-Z&#39;&quot;</span></code></pre></div>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="jumphost-12">Jumphost (1/2)</h1>
+<p>A Jump Host is a machine used as a relay to reach another, otherwise
+possibly unreachable, machine. This unreachable machine is named
+internal-machine</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a> ┌────────────────────┐      ┌───────────────────────────────────────────────┐</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a> │ <span class="bu">Internet</span>           │      │ Internal network                              │</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a> │                    │      │                                               │</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a> │ ┌───────────────┐  │      │ ┌─────────────┐          ┌──────────────────┐ │</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a> │ │     <span class="im">local</span>     ├──┼──────┤►│   <span class="bu">gateway</span>   ├─────────►│     <span class="kw">internal</span>     │ │</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a> │ └───────────────┘  │      │ └─────────────┘          └──────────────────┘ │</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a> │                    │      │  used as jumphost         unreachable to      │ </span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a> │                    │      │                           the outside world   │</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a> └────────────────────┘      └───────────────────────────────────────────────┘</span></code></pre></div>
+<p><em>Lab objective</em>: Connect to <em>internal</em> from your local
+machine via SSH with a single command</p>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="jumphost-22">Jumphost (2/2)</h1>
+<p>Lab setup:</p>
+<ul>
+<li>First, copy your public key to the remote server (gateway):</li>
+</ul>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ scp .ssh/my-ssh-key.pub user@&lt;<span class="bu">gateway_pub</span>&gt;:</span></code></pre></div>
+<ul>
+<li>Login to the remote server then copy your public key to the
+destination machine:</li>
+</ul>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh user@&lt;<span class="bu">gateway_pub</span>&gt;</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>(<span class="bu">gateway</span>)$ ssh-copy-id -f -i my-ssh-key.pub &lt;<span class="kw">internal_priv</span>&gt;</span></code></pre></div>
+<ul>
+<li>Connect to the remote machine with a single command:</li>
+</ul>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -J user@&lt;<span class="bu">gateway_pub</span>&gt; user@&lt;<span class="kw">internal_priv</span>&gt;</span></code></pre></div>
+<p><strong>Note</strong>: <em>internal</em> host key fingerprints
+available at
+<strong>https://github.com/wllm-rbnt/hacktivity-2024-openssh-workshop/blob/main/fingerprints.txt</strong></p>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="socks-proxy-12">SOCKS proxy (1/2)</h1>
+<p>A <em>SOCKS server</em> proxies TCP connections to arbitrary IP
+addresses and ports</p>
+<p>With SOCKS 5, DNS queries can be performed by the proxy on behalf of
+the client</p>
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a> ┌───────────────────────┐            ┌─────────────────────────────────────────────┐</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a> │ Local network         │            │ Internal network                            │</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a> │                       │            │                                             │</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a> │   ┌───────────────┐   │   Step 1   │ ┌─────────────┐  Step 3  ┌────────────────┐ │</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a> │   │     <span class="im">local</span>     ├───┼────────────┤►│   <span class="bu">gateway</span>   ├─────────►│    <span class="kw">internal</span>    │ │</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a> │   └─┬───────────▲─┘   │    SSH     │ └─────────────┘  HTTP    └────────────────┘ │</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a> │     │   SOCKS   │     │            │  The SOCKS proxy         The <span class="kw">internal</span> HTTP  │</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a> │     └───────────┘     │            │                          server             │</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a> │         Step 2        │            │                                             │</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a> └───────────────────────┘            └─────────────────────────────────────────────┘</span></code></pre></div>
+<p><em>Lab objective</em>: Reach the internal HTTP server at
+http://secret-intranet (running on internal) through a SOCKS proxy
+running on <em>gateway</em></p>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="socks-proxy-22">SOCKS proxy (2/2)</h1>
+<ul>
+<li>Start a local SOCKS Proxy by establishing an SSH connection to
+<em>gateway</em> with parameter <code>-D</code>:</li>
+</ul>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -D 1234 user@&lt;<span class="bu">gateway_pub</span>&gt;</span></code></pre></div>
+<ul>
+<li>Check, locally, for listening TCP port with</li>
+</ul>
+<div class="sourceCode" id="cb39"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ss -tpln | grep :1234</span></code></pre></div>
+<ul>
+<li>Configure your local browser to use local TCP port 1234 as a SOCKS
+proxy</li>
+<li>Configure your local browser to send DNS queries though the SOCKS
+proxy (tick the option in configuration)</li>
+<li>Point your browser to http://secret-intranet or Try it with
+curl:</li>
+</ul>
+<div class="sourceCode" id="cb40"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ http_proxy=socks5h://127.0.0.1:1234 curl http://secret-intranet</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>This is the secret Intranet on <span class="kw">internal</span> machine listening on 127.0.0.1 port 80.</span></code></pre></div>
+<ul>
+<li>Bonus: look at your local traffic with <em>tcpdump</em>, you
+shouldn’t see any DNS exchanges</li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="reverse-socks-proxy-12">Reverse SOCKS proxy (1/2)</h1>
+<p>A reverse SOCKS proxy setup allows a remote machine to use your local
+machine as a SOCKS proxy</p>
+<div class="sourceCode" id="cb41"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a> ┌───────────────────────┐          ┌───────────────────────────────────────────┐</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a> │   <span class="bu">Internet</span>            │          │ Internal network                          │</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a> │                       │          │                                           │</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a> │   ┌───────────────┐   │  Step 1  │ ┌─────────────┐          ┌──────────────┐ │</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a> │   │     <span class="im">local</span>     ├───┼──────────┤►│   <span class="bu">gateway</span>   ├─────────►│   <span class="kw">internal</span>   │ │</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a> │   └┬──────────────┘   │   SSH    │ └─▲─────────┬─┘          └──────────────┘ │</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a> │    │ Step 3           │          │   │         │                             │</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a> │    ▼ HTTP             │          │   │ Step 2  │                             │</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a> │  http://icanhazip.com │          │   └─────────┘                             │</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a> │                       │          │     SOCKS                                 │</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a> └───────────────────────┘          └───────────────────────────────────────────┘</span></code></pre></div>
+<p><em>Lab objective</em>: Reach the external HTTP server at
+<strong>http://icanhazip.com</strong> from <em>gateway</em> through a
+SOCKS proxy running on your local machine</p>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="reverse-socks-proxy-22">Reverse SOCKS proxy (2/2)</h1>
+<p>Setup:</p>
+<ul>
+<li>Start a remote SOCKS Proxy by establishing an SSH connection to
+<em>gateway</em> with parameter -R:</li>
+</ul>
+<div class="sourceCode" id="cb42"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -R 1234 user@&lt;<span class="bu">gateway_pub</span>&gt; </span></code></pre></div>
+<ul>
+<li>Check, on <em>gateway</em>, for listening TCP port with</li>
+</ul>
+<div class="sourceCode" id="cb43"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>(<span class="bu">gateway</span>)$ ss -tpln | grep :1234</span></code></pre></div>
+<ul>
+<li>Point your curl on <em>gateway</em> to
+<strong>http://icanhazip.com</strong> though the SOCKS proxy listening
+on 127.0.0.1<span class="emoji" data-emoji="1234">🔢</span></li>
+</ul>
+<div class="sourceCode" id="cb44"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>(<span class="bu">gateway</span>)$ http_proxy=socks5h://127.0.0.1:1234 curl http://icanhazip.com</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>&lt;Conference public IP address&gt;</span></code></pre></div>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="localforward-12">LocalForward (1/2)</h1>
+<p>A <em>LocalForward</em> creates a locally listening TCP socket that
+is connected over SSH to a TCP port reachable in the network scope of a
+remote machine</p>
+<p><em>Lab objective:</em> Create and connect local listening TCP socket
+on port 8888 to TCP port 80 on 127.0.0.1 in the context of
+<em>gateway</em></p>
+<p>Setup:</p>
+<ul>
+<li>Configure the forwarding while connecting to <em>gateway</em>
+through SSH with -L parameter:</li>
+</ul>
+<div class="sourceCode" id="cb45"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -L 8888:127.0.0.1:80 user@&lt;<span class="bu">gateway_pub</span>&gt;</span></code></pre></div>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="localforward-22">LocalForward (2/2)</h1>
+<p><code>-L</code> parameter syntax:</p>
+<p><code>&lt;local_port&gt;:&lt;remote_IP&gt;:&lt;remote_port&gt;</code></p>
+<p>can be extended to</p>
+<p><code>&lt;local_IP&gt;:&lt;local_port&gt;:&lt;remote_IP&gt;:&lt;remote_port&gt;</code></p>
+<ul>
+<li>SSH is now listening on TCP port 8888 on your local machine, check
+with:</li>
+</ul>
+<div class="sourceCode" id="cb46"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ss -tpln</span></code></pre></div>
+<ul>
+<li><p>Point your browser to <strong>http://127.0.0.1:8888</strong> You
+should see something like:</p>
+<p>Hello world ! This is gateway listening on 127.0.0.1 port
+80.</p></li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="remoteforward-12">RemoteForward (1/2)</h1>
+<p>A <em>RemoteForward</em> creates a listening TCP socket on a remote
+machine that is connected over SSH to a TCP port reachable in the
+network scope of the local machine</p>
+<p><em>Lab objective</em>: Create a TCP socket on <em>gateway</em> on
+port 8123 and connect it to a locally listening netcat on TCP port
+1234</p>
+<p>Setup:</p>
+<ul>
+<li>Start a listening service on localhost on your local machine on TCP
+port 1234:</li>
+</ul>
+<div class="sourceCode" id="cb47"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ nc -l -p 1234 -s 127.0.0.1 # if you use netcat-traditional</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>or</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ nc -l 127.0.0.1 1234 # if you use netcat-openbsd</span></code></pre></div>
+<ul>
+<li>Check that it’s listening with <code>ss</code> (<code>netstat</code>
+replacement on GNU/Linux):</li>
+</ul>
+<div class="sourceCode" id="cb48"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ss -tpln | grep 1234</span></code></pre></div>
+<ul>
+<li>Configure the forwarding on TCP port 8123 while connecting to
+<em>gateway</em> with <code>-R</code> parameter:</li>
+</ul>
+<div class="sourceCode" id="cb49"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -R 8123:127.0.0.1:1234 user@&lt;<span class="bu">gateway_pub</span>&gt;</span></code></pre></div>
+<ul>
+<li><code>ssh</code> is now listening on TCP port 8123 on
+<em>gateway</em></li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="remoteforward-22">RemoteForward (2/2)</h1>
+<p><code>-R</code> parameter syntax:</p>
+<p><code>&lt;remote_port&gt;:&lt;local_IP&gt;:&lt;local_port&gt;</code></p>
+<p>can be extended to</p>
+<p><code>&lt;remote_IP&gt;:&lt;remote_port&gt;:&lt;local_IP&gt;:&lt;local_port&gt;</code></p>
+<ul>
+<li>Check its listening status on gateway:</li>
+</ul>
+<div class="sourceCode" id="cb50"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>(<span class="bu">gateway</span>)$ ss -tpln | grep 8123</span></code></pre></div>
+<ul>
+<li>Connect to the forwarded service on remote machine on port 8123 with
+netcat:</li>
+</ul>
+<div class="sourceCode" id="cb51"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>(<span class="bu">gateway</span>)$ nc 127.0.0.1 8123</span></code></pre></div>
+<ul>
+<li>Both netcat instances, local &amp; remote, should be able to
+communicate with each other</li>
+</ul>
+<p><strong>Note</strong>: reverse proxy SOCKS is a special use case of
+<code>-R</code></p>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="x11-forwarding">X11 Forwarding</h1>
+<p><em>Lab objective:</em> Start a graphical application on
+<em>gateway</em>, and get the visual feedback locally</p>
+<p><em>Setup</em>:</p>
+<ul>
+<li>Connect to <em>gateway</em> with <code>-X</code> parameter:</li>
+</ul>
+<div class="sourceCode" id="cb52"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -X user@&lt;<span class="bu">gateway_pub</span>&gt;</span></code></pre></div>
+<ul>
+<li>Then, start a graphical application on the remote machine:</li>
+</ul>
+<div class="sourceCode" id="cb53"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>(<span class="bu">gateway</span>)$ xmessage &quot;This is a test !&quot; &amp;!</span></code></pre></div>
+<ul>
+<li>Check processes on <em>gateway</em> and <em>local</em> machine:</li>
+</ul>
+<div class="sourceCode" id="cb54"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>(<span class="bu">gateway</span>|<span class="im">local</span>)$ ps auxf</span></code></pre></div>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>On a Linux local client, the XOrg graphical server is used</li>
+<li>On a Windows machine use:
+<ul>
+<li>VcXsrv: <strong>https://sourceforge.net/~/vcxsrv/</strong></li>
+<li>or XMing: <strong>https://sourceforge.net/~/xming/</strong></li>
+</ul></li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="connection-to-legacy-systems-14">Connection to Legacy Systems
+(1/4)</h1>
+<h2 id="host-key-algorithm-mismatch">Host key algorithm mismatch</h2>
+<p>“Unable to negotiate with 10.11.12.13 port 22: no matching host key
+type found. Their offer: ssh-rsa”</p>
+<div class="sourceCode" id="cb55"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -o HostKeyAlgorithms=ssh-rsa &lt;user&gt;@&lt;machine&gt;</span></code></pre></div>
+<ul>
+<li>Listing known host key algorithms:</li>
+</ul>
+<div class="sourceCode" id="cb56"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -Q key</span></code></pre></div>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="connection-to-legacy-systems-24">Connection to Legacy Systems
+(2/4)</h1>
+<h2 id="wrong-key-exchange-algorithm">Wrong key exchange algorithm</h2>
+<p>“Unable to negotiate with 10.11.12.13 port 22: no matching key
+exchange method found. Their offer:
+diffie-hellman-group-exchange-sha1”</p>
+<div class="sourceCode" id="cb57"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -o KexAlgorithms=diffie-hellman-group1-sha1 &lt;user&gt;@&lt;machine&gt;</span></code></pre></div>
+<ul>
+<li>Listing known key exchange algorithms:</li>
+</ul>
+<div class="sourceCode" id="cb58"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -Q kex</span></code></pre></div>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="connection-to-legacy-systems-34">Connection to Legacy Systems
+(3/4)</h1>
+<h2 id="wrong-cipher">Wrong cipher</h2>
+<p>“Unable to negotiate with 10.11.12.13 port 22: no matching cipher
+found. Their offer: aes128-cbc,3des-cbc,aes192-cbc,aes256-cbc”</p>
+<div class="sourceCode" id="cb59"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -o Ciphers=aes256-cbc &lt;user&gt;@&lt;machine&gt;</span></code></pre></div>
+<ul>
+<li>Listing known ciphers:</li>
+</ul>
+<div class="sourceCode" id="cb60"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -Q cipher</span></code></pre></div>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="connection-to-legacy-systems-44">Connection to Legacy Systems
+(4/4)</h1>
+<h2 id="wrong-public-key-signature-algorithm">Wrong public key signature
+algorithm</h2>
+<p>“debug1: send_pubkey_test: no mutual signature algorithm” (with ssh
+-v)</p>
+<div class="sourceCode" id="cb61"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -o PubkeyAcceptedAlgorithms=ssh-rsa &lt;user&gt;@&lt;machine&gt;</span></code></pre></div>
+<ul>
+<li>Listing known public key sig algorithms:</li>
+</ul>
+<div class="sourceCode" id="cb62"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -Q key-sig</span></code></pre></div>
+<p>or</p>
+<div class="sourceCode" id="cb63"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh -Q PubkeyAcceptedAlgorithms</span></code></pre></div>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="ssh-tarpit">SSH Tarpit</h1>
+<ul>
+<li>The legitimate SSH server is running on port 22 on
+<em>gateway</em></li>
+<li><code>endlessh</code>, a simple honeypot, is running on port 2222 on
+<em>gateway</em> for demonstration purpose</li>
+<li>Try to connect to port 2222 with</li>
+</ul>
+<div class="sourceCode" id="cb64"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ ssh user@&lt;<span class="bu">gateway_pub</span>&gt; -p 2222</span></code></pre></div>
+<ul>
+<li>Check both ports with <code>netcat</code>:</li>
+</ul>
+<div class="sourceCode" id="cb65"><pre
+class="sourceCode sshschema"><code class="sourceCode schematics"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ nc -nv &lt;<span class="bu">gateway_pub</span>&gt; 22</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>(UNKNOWN) [&lt;<span class="bu">gateway_pub</span>&gt;] 22 (ssh) open</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>SSH-2.0-OpenSSH_9.2p1 Debian-2</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>(<span class="im">local</span>)$ nc -nv &lt;<span class="bu">gateway_pub</span>&gt; 2222</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>(UNKNOWN) [&lt;<span class="bu">gateway_pub</span>&gt;] 2222 (?) open</span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>XkZ?NK&gt;-h5xs#/OSF</span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>SU6Jv</span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>6%n[;</span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a>M5I&#39;R8.W}wgE?&quot;DhADl&quot;jp&quot;$x#4;Z</span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a>wT%mJK_l5(Nf]Iw_</span>
+<span id="cb65-12"><a href="#cb65-12" aria-hidden="true" tabindex="-1"></a>$2&#39;ZUmQ2YgdyXnI,</span>
+<span id="cb65-13"><a href="#cb65-13" aria-hidden="true" tabindex="-1"></a>\7_c.f4@bQHcY&gt;N&#39;y</span>
+<span id="cb65-14"><a href="#cb65-14" aria-hidden="true" tabindex="-1"></a>[...]</span></code></pre></div>
+<hr />
+<!--config:
+margins:
+    left: 10
+    right: 10
+-->
+<h1 id="tmux---terminal-multiplexer">tmux - <strong>t</strong>erminal
+<strong>mu</strong>ltiple<strong>x</strong>er</h1>
+<p>tmux can be used to keep interactive shell tasks running while you’re
+disconnected</p>
+<ul>
+<li>Installation: <code>$ sudo apt install tmux</code></li>
+<li>Create a tmux session: <code>$ tmux</code></li>
+<li>List tmux sessions: <code>$ tmux ls</code></li>
+<li>Attach to first session: <code>$ tmux a</code></li>
+<li>Attach to session by index #: <code>$ tmux a -t 1</code></li>
+<li>Commands inside a session:
+<ul>
+<li><code>Ctrl-b d</code>: detach from session</li>
+<li><code>Ctrl-b c</code>: create new window</li>
+<li><code>Ctrl-b n</code> / <code>Ctrl-b p</code>: switch to
+next/previous window</li>
+<li><code>Ctrl-b %</code> / <code>Ctrl-b "</code>: split window
+vertically/horizontally</li>
+<li><code>Ctrl-b &lt;arrow keys&gt;</code>: move cursor across window
+panes</li>
+<li><code>Ctrl-[ + &lt;arrow keys&gt;</code>: browse current pane
+backlog, press return to quit</li>
+</ul></li>
+<li>Documentation: <code>$ man tmux</code></li>
+</ul>
+<hr />
+<!--config:
+margins:
+    left: 4
+    right: 10
+-->
+<h1 id="references">References</h1>
+<ul>
+<li><a href="https://www.openssh.com">OpenSSH</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Secure_Shell">SSH History
+(Wikipedia)</a></li>
+<li><a href="https://mwl.io/nonfiction/tools#ssh">SSH Mastery by Michael
+W. Lucas</a></li>
+<li><a
+href="https://www.bsdcan.org/2012/schedule/attachments/193_SSH%20Mastery%20BSDCan%202012-public.pdf">SSH
+Mastery <span class="citation" data-cites="BSDCAN">@BSDCAN</span>
+2012</a></li>
+<li><a href="https://iximiuz.com/en/posts/ssh-tunnels/">A Visual Guide
+to SSH Tunnels</a></li>
+<li><a href="https://blog.tjll.net/ssh-kung-fu/">SSH Kung Fu</a></li>
+<li><a
+href="https://github.com/hackerschoice/thc-tips-tricks-hacks-cheat-sheet#ssh">The
+Hacker’s Choice SSH Tips &amp; Tricks</a></li>
+<li><a href="https://www.ssh.com/academy/ssh/port">Why port 22
+?</a></li>
+</ul>
+<hr />
+<!--config:
+margins:
+    top: auto
+    left: auto
+    right: auto
+-->
+<p><strong>Thanks for your attention !</strong></p>
+</body>
+</html>

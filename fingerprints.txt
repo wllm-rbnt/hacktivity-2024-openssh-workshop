@@ -1,0 +1,83 @@
+﻿# "gateway" machine fingerprints
+
+256 SHA256:gbF30TEqv4ucpI3VFIEjq0dnrji5woxacnPe+N9mFX8 root@460a6cac3a3c (ECDSA)
++---[ECDSA 256]---+
+|      .  .o.o.   |
+|      .+o  +..   |
+|      oo+.+      |
+|      o.o= ..    |
+|     o +S o  o   |
+|    . . .o .. . E|
+|.++ .+ .o o.   . |
+|.++++o.B +o.     |
+|o  .++=.*oo      |
++----[SHA256]-----+
+
+256 SHA256:/hUAOroJsQzhM4f9qSZxcBLqEYqmoPi03pVX2fQUxrg root@460a6cac3a3c (ED25519)
++--[ED25519 256]--+
+|.o      .    oo  |
+|=.=    . .  .... |
+|*X.+  o   . ...  |
+|BoOo....   =Eo   |
+|+o=..o  S o o .  |
+| ooo.o o .   .   |
+| .ooo o o   .    |
+| .o. . . . .     |
+|  . .     .      |
++----[SHA256]-----+
+
+3072 SHA256:D0gvg+2kFzvrLjqi0OEZ23tnQN3H/+oB3cqm0VZHWiQ root@460a6cac3a3c (RSA)
++---[RSA 3072]----+
+|              E .|
+|               o |
+|      .. . .    o|
+|     +.o. . o. = |
+|  o ..B S  ...o +|
+| o * +.= o   +.o.|
+|. = o =.  . . B. |
+|o . .o.oo    = ..|
+|o..o.=+o    ..o. |
++----[SHA256]-----+
+
+
+# "internal" machine fingerprints
+
+256 SHA256:tLt5tkoTcmGKxRqxgp/Xn7xQ7XdF8w0xY9M+l9mBdgc root@460a6cac3a3c (ECDSA)
++---[ECDSA 256]---+
+|    .         Eo |
+| .   +       + Bo|
+|. . o o +   . ooB|
+| . o * + +     *B|
+|  o + + S .     *|
+|   .   * =     . |
+|      . B . . .  |
+|       o =o. .   |
+|        =+..     |
++----[SHA256]-----+
+
+256 SHA256:HFofTLfh2W/1IR3+g0sXGAcRs4ZnVsWwGKmbOzeMefk root@460a6cac3a3c (ED25519)
++--[ED25519 256]--+
+|          . +B=*o|
+|         o ooBX.o|
+|        o oo=Oo=.|
+|       + o..= o.*|
+|      . S .o o o=|
+|          o . o..|
+|           = o   |
+|          = *    |
+|           + oE  |
++----[SHA256]-----+
+
+3072 SHA256:oZEN/E3Oy14QLeYGw+kFojuoaVGsiJqGKmxXYDilDus root@460a6cac3a3c (RSA)
++---[RSA 3072]----+
+|     .o..o .     |
+|  .. ..== * .    |
+|  +o. ooo@ o     |
+|++o+ . oo.B      |
+|=++ + . So o     |
+|+=.  o    o .    |
+|Oo  .    . .     |
+|=E .      .      |
+|+ .              |
++----[SHA256]-----+
+

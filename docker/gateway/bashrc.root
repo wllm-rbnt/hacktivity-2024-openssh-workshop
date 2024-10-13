@@ -1,0 +1,1 @@
+export PS1="\u@gateway("$(hostname -i | sed -e "s/^/$(printf '\033[36m')/" -e "s/ /$(printf '\033[0m')\/$(printf '\033[0;31m')/" -e "s/$/$(printf '\033[0m')/")")# "

@@ -1,0 +1,18 @@
+@page {
+    size: A4 landscape;
+    margin: 0;
+}
+
+@media print
+{
+hr {page-break-before:always}
+}
+
+body { min-width: 80% !important; }
+
+.emoji {                
+  display: inline-block;
+  width: 1em;           
+  height: 1em;          
+  vertical-align: -.1em;
+}        
