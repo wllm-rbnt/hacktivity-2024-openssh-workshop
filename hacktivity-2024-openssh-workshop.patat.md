@@ -216,7 +216,7 @@ Shell commands are prefixed by a prompt designating the machine on which the com
     + <gateway_priv\>
     + <internal_priv\>
 
---- 
+---
 
 <!--config:
 wrap: false
@@ -225,7 +225,7 @@ margins:
     right: 10
 -->
 
-# Labs Containers
+# Labs Containers (1/2)
 
 * 2 containers will be used during this workshop, one for *gateway* and a second for *internal*
 
@@ -253,7 +253,34 @@ margins:
 (local)$ ./docker_wipe.sh
 (local)$ sudo systemctl restart docker
 ```
-    
+
+---
+
+<!--config:
+wrap: false
+margins:
+    left: 10
+    right: 10
+-->
+
+# Labs Containers (2/2)
+
+Pre-built versions of the containers (provided via USB drives) can be loaded
+from the `docker/images/` directory with the following command:
+
+```sshschema
+(local)$ cd docker
+(local)$ ./load_images.sh
+```
+
+Locally built container images, can be exported to files in the
+`docker/images/` directory with the following command:
+
+```sshschema
+(local)$ cd docker
+(local)$ ./save_images.sh
+```
+
 ---
 
 <!--config:
